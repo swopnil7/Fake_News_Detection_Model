@@ -12,21 +12,13 @@ import os
 os.makedirs('data/models', exist_ok=True)
 
 def load_data():
-    """
-    Load and preprocess fake news dataset.
-    Replace with your actual dataset loading method.
-    """
-    # Sample dataset (replace with your actual dataset)
-    data = pd.DataFrame({
-        'text': [
-            'This is a real news article about important events.',
-            'Shocking fake news that is completely fabricated!',
-            'Verified information from reliable sources.',
-            'Misleading story with no factual basis.'
-        ],
-        'label': [1, 0, 1, 0]  # 1 for real, 0 for fake
-    })
-    return data
+    try:
+        # Load the dataset
+        data = pd.read_csv('data/processed/processed_dataset.csv')
+        return data
+    except Exception as e:
+        st.error(f"Error loading dataset: {e}")
+        return None
 
 def train_model(data):
     """
@@ -84,7 +76,11 @@ def main():
             os.path.exists('data/models/tfidf_vectorizer.joblib')):
         st.warning("No pre-trained model found. Training a new model...")
         data = load_data()
-        model, vectorizer = train_model(data)
+        if data is not None:
+            model, vectorizer = train_model(data)
+        else:
+            st.error("Dataset loading failed. Cannot proceed with training.")
+            return
     else:
         # Load existing model
         model = joblib.load('data/models/logistic_regression_model.joblib')
