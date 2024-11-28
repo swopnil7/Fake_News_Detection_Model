@@ -3,8 +3,8 @@ import pickle
 import pandas as pd
 
 # Load your machine learning model
-model = pickle.load(open('model/logistic_regression_model.pkl', 'rb'))
-vectorizer = pickle.load(open('model/tfidf_vectorizer.pkl', 'rb'))
+model = pickle.load(open('logistic_regression_model.pkl', 'rb'))
+vectorizer = pickle.load(open('tfidf_vectorizer.pkl', 'rb'))
 
 st.title("Fake News Detection App")
 
