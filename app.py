@@ -6,13 +6,17 @@ import requests
 
 # Load Lottie animation
 def load_lottie_url(url):
-    response = requests.get(url)
-    if response.status_code != 200:
+    try:
+        response = requests.get(url)
+        if response.status_code != 200:
+            return None
+        return response.json()
+    except Exception as e:
+        st.error(f"Error loading animation: {e}")
         return None
-    return response.json()
 
 # Load animations
-wave_animation = load_lottie_url("https://assets1.lottiefiles.com/packages/lf20_9kypz9bv.json")
+wave_animation = load_lottie_url("https://lottie.host/2aea07e1-5cfd-45a6-9f37-bff928831f92/rFSSBoTMGw.json")
 
 # Load models
 def load_models():
@@ -36,7 +40,11 @@ def classify_news(text, model, vectorizer):
 # Main app
 def main():
     # App title with animation
-    st_lottie(wave_animation, height=200, key="wave")
+    if wave_animation:
+        st_lottie(wave_animation, height=200, key="wave")
+    else:
+        st.warning("⚠️ Animation could not be loaded. Please check your network or the animation URL.")
+
     st.markdown("<h1 style='text-align: center; color: #4caf50;'>🕵️ Fake News Detection App</h1>", unsafe_allow_html=True)
 
     # Sidebar content
