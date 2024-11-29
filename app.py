@@ -108,7 +108,7 @@ def main():
             st.warning("Please enter some text to classify.")
 
     # Footer with a custom message
-    st.markdown("<h3 style='text-align: center; color: #4caf50;'>Powered by Machine Learning 🌟</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center; color: #4caf50;'>The Keyboard Crackers 🌟</h3>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
