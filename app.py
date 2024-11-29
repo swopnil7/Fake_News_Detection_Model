@@ -1,14 +1,21 @@
 import streamlit as st
 import joblib
 import os
+from streamlit_lottie import st_lottie
+import requests
 
-# Ensure the models directory exists
-os.makedirs('data/models', exist_ok=True)
+# Load Lottie animation
+def load_lottie_url(url):
+    response = requests.get(url)
+    if response.status_code != 200:
+        return None
+    return response.json()
 
+# Load animations
+wave_animation = load_lottie_url("https://assets1.lottiefiles.com/packages/lf20_9kypz9bv.json")
+
+# Load models
 def load_models():
-    """
-    Load the pre-trained model and vectorizer.
-    """
     try:
         model = joblib.load('data/models/logistic_regression_model.joblib')
         vectorizer = joblib.load('data/models/tfidf_vectorizer.joblib')
@@ -17,65 +24,83 @@ def load_models():
         st.error(f"Error loading models: {e}")
         return None, None
 
+# Classification function
 def classify_news(text, model, vectorizer):
-    """
-    Classify a piece of text as real or fake news.
-    """
-    # Vectorize the input text
     vectorized_input = vectorizer.transform([text])
-    
-    # Predict
     prediction = model.predict(vectorized_input)
     proba = model.predict_proba(vectorized_input)[0]
-    
-    # Determine result with probability
     result = "Real News" if prediction[0] == 1 else "Fake News"
     confidence = proba[prediction[0]] * 100
-    
     return result, confidence
 
+# Main app
 def main():
-    st.title("🕵️ Fake News Detection App")
+    # App title with animation
+    st_lottie(wave_animation, height=200, key="wave")
+    st.markdown("<h1 style='text-align: center; color: #4caf50;'>🕵️ Fake News Detection App</h1>", unsafe_allow_html=True)
 
-    # Load pre-trained model and vectorizer
+    # Sidebar content
+    st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/e/e4/Fake_News.png", width=250)
+    st.sidebar.header("About the App")
+    st.sidebar.info("""
+    This app uses advanced machine learning techniques to detect whether a news article 
+    is real or fake. Simply paste your article text, and let the app classify it for you!
+    """)
+
+    # Load models
     model, vectorizer = load_models()
     if model is None or vectorizer is None:
         st.error("Failed to load models. Please ensure the files exist in 'data/models'.")
         return
 
-    # User input section
-    st.header("News Article Classification")
-    user_input = st.text_area("Enter the news article text:", 
-                               height=200, 
-                               help="Paste the text you want to classify")
+    # Input section with enhanced styles
+    st.markdown(
+        """
+        <style>
+        .stTextArea>div>div>textarea {
+            border: 2px solid #4caf50;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 16px;
+            color: #333;
+        }
+        .stButton>button {
+            background-color: #4caf50;
+            color: white;
+            border-radius: 5px;
+            font-size: 16px;
+            padding: 10px;
+            margin-top: 20px;
+            transition: all 0.3s ease-in-out;
+        }
+        .stButton>button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
+    # User input and classification
+    user_input = st.text_area("Enter the news article text:", height=200, help="Paste the text you want to classify")
     if st.button("Classify News"):
         if user_input.strip():
             try:
-                # Classify the news
                 result, confidence = classify_news(user_input, model, vectorizer)
-                
-                # Display results
+                # Display results with styled messages
                 if result == "Real News":
-                    st.success(f"🟢 The article is classified as: {result}")
+                    st.success(f"🟢 **The article is classified as: {result}**")
                 else:
-                    st.error(f"🔴 The article is classified as: {result}")
-                
+                    st.error(f"🔴 **The article is classified as: {result}**")
                 st.info(f"Confidence: {confidence:.2f}%")
-            
             except Exception as e:
                 st.error(f"An error occurred: {e}")
         else:
             st.warning("Please enter some text to classify.")
 
-    # Optional: Add some additional information
-    st.sidebar.header("About the App")
-    st.sidebar.info("""
-    This Fake News Detection app uses machine learning to 
-    classify news articles as real or fake. 
-    
-    Note: The accuracy depends on the training data and model.
-    """)
+    # Footer with a custom message
+    st.markdown("<h3 style='text-align: center; color: #4caf50;'>Powered by Machine Learning 🌟</h3>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
