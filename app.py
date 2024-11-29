@@ -1,59 +1,25 @@
 import streamlit as st
-import pandas as pd
-import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, classification_report
 import joblib
 import os
 
 # Ensure the models directory exists
 os.makedirs('data/models', exist_ok=True)
 
-def load_data():
+def load_models():
+    """
+    Load the pre-trained model and vectorizer.
+    """
     try:
-        # Load the dataset
-        data = pd.read_csv('data/processed/processed_dataset.csv')
-        return data
+        model = joblib.load('data/models/logistic_regression_model.joblib')
+        vectorizer = joblib.load('data/models/tfidf_vectorizer.joblib')
+        return model, vectorizer
     except Exception as e:
-        st.error(f"Error loading dataset: {e}")
-        return None
-
-def train_model(data):
-    """
-    Train a logistic regression model for fake news detection
-    """
-    # Split the data
-    X_train, X_test, y_train, y_test = train_test_split(
-        data['text'], data['label'], test_size=0.2, random_state=42
-    )
-
-    # Vectorize the text
-    vectorizer = TfidfVectorizer(stop_words='english', max_features=5000)
-    X_train_vectorized = vectorizer.fit_transform(X_train)
-    X_test_vectorized = vectorizer.transform(X_test)
-
-    # Train logistic regression model
-    model = LogisticRegression(max_iter=1000)
-    model.fit(X_train_vectorized, y_train)
-
-    # Evaluate the model
-    y_pred = model.predict(X_test_vectorized)
-    accuracy = accuracy_score(y_test, y_pred)
-    print(f"Model Accuracy: {accuracy}")
-    print("\nClassification Report:")
-    print(classification_report(y_test, y_pred))
-
-    # Save the model and vectorizer
-    joblib.dump(model, 'data/models/logistic_regression_model.joblib')
-    joblib.dump(vectorizer, 'data/models/tfidf_vectorizer.joblib')
-
-    return model, vectorizer
+        st.error(f"Error loading models: {e}")
+        return None, None
 
 def classify_news(text, model, vectorizer):
     """
-    Classify a piece of text as real or fake news
+    Classify a piece of text as real or fake news.
     """
     # Vectorize the input text
     vectorized_input = vectorizer.transform([text])
@@ -70,21 +36,12 @@ def classify_news(text, model, vectorizer):
 
 def main():
     st.title("🕵️ Fake News Detection App")
-    
-    # Check if model exists, if not train it
-    if not (os.path.exists('data/models/logistic_regression_model.joblib') and 
-            os.path.exists('data/models/tfidf_vectorizer.joblib')):
-        st.warning("No pre-trained model found. Training a new model...")
-        data = load_data()
-        if data is not None:
-            model, vectorizer = train_model(data)
-        else:
-            st.error("Dataset loading failed. Cannot proceed with training.")
-            return
-    else:
-        # Load existing model
-        model = joblib.load('data/models/logistic_regression_model.joblib')
-        vectorizer = joblib.load('data/models/tfidf_vectorizer.joblib')
+
+    # Load pre-trained model and vectorizer
+    model, vectorizer = load_models()
+    if model is None or vectorizer is None:
+        st.error("Failed to load models. Please ensure the files exist in 'data/models'.")
+        return
 
     # User input section
     st.header("News Article Classification")
