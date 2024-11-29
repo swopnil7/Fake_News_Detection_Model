@@ -48,7 +48,7 @@ def main():
     st.markdown("<h1 style='text-align: center; color: #4caf50;'>🕵️ Fake News Detection App</h1>", unsafe_allow_html=True)
 
     # Sidebar content
-    st.sidebar.image("https://png.pngtree.com/png-vector/20211111/ourmid/pngtree-fake-news-stamp-label-png-image_4027367.png", width=250)
+    st.sidebar.image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgacOEKP5hJ_z8h6lssY3an3HUnChNXP4VXg&s", width=250)
     st.sidebar.header("About the App")
     st.sidebar.info("""
     This app uses advanced machine learning techniques to detect whether a news article 
