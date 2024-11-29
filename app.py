@@ -16,7 +16,7 @@ def load_lottie_url(url):
         return None
 
 # Load animations
-wave_animation = load_lottie_url("https://lottie.host/2aea07e1-5cfd-45a6-9f37-bff928831f92/rFSSBoTMGw.json")
+wave_animation = load_lottie_url("https://lottie.host/ee6589da-1fd3-4c83-aa76-3fc9c339d67f/97tqW55fBj.json")
 
 # Load models
 def load_models():
