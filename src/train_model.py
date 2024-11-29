@@ -64,8 +64,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train a text classification model with Logistic Regression")
     # Set the default data_path to your dataset path
     parser.add_argument('--data_path', type=str, default='data/processed/processed_data.csv', help="Path to the input CSV data file")
-    parser.add_argument('--model_path', type=str, default='data/models/logistic_regression_model.pkl', help="Path to save the trained model")
-    parser.add_argument('--vectorizer_path', type=str, default='data/models/tfidf_vectorizer.pkl', help="Path to save the TF-IDF vectorizer")
+    parser.add_argument('--model_path', type=str, default='data/models/logistic_regression_model.joblib', help="Path to save the trained model")
+    parser.add_argument('--vectorizer_path', type=str, default='data/models/tfidf_vectorizer.joblib', help="Path to save the TF-IDF vectorizer")
 
     args = parser.parse_args()
 
