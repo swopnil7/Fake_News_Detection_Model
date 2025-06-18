@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detector | The Keyboard Crackers ⭐</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="background"></div>
+    <div class="container">
+        <h1>🕵️ Fake News Detector</h1>
+        <h2>- The Keyboard Crackers 🎆</h2>
+
+        <div class="tabs">
+            <div class="tab {% if active_tab == 'text' %}active{% endif %}" onclick="showTab('text')">📝 Text Input</div>
+            <div class="tab {% if active_tab == 'image' %}active{% endif %}" onclick="showTab('image')">🖼️ OCR Image</div>
+        </div>
+
+        <div id="text" class="tab-content {% if active_tab == 'text' %}active{% endif %}">
+            <form method="POST" action="/predict">
+                <label for="title">Headline:</label>
+                <input type="text" id="title" name="title" required>
+        
+                <label for="text">Body:</label>
+                <textarea id="text" name="text" rows="5" required></textarea>
+        
+                <button type="submit">Detect Fake⚠️ News</button>
+            </form>
+        
+            {% if active_tab == 'text' and prediction %}
+            <div class="result">
+                <strong>Prediction:</strong> {{ prediction }}
+            </div>
+            {% endif %}
+        </div>
+        
+        <div id="image" class="tab-content {% if active_tab == 'image' %}active{% endif %}">
+            <form method="POST" action="/ocr" enctype="multipart/form-data">
+                <label for="image">Upload a News Image for OCR:</label>
+                <input type="file" id="image" name="image" accept="image/*">
+        
+                <button type="submit">🔍 Extract and Detect</button>
+            </form>
+        
+            {% if active_tab == 'image' and extracted_text %}
+            <div class="result">
+                <strong>Extracted Text:</strong>
+                <p>{{ extracted_text }}</p>
+            </div>
+        
+            <div class="result">
+                <strong>Prediction:</strong> {{ prediction }}
+            </div>
+            {% endif %}
+        
+            {% if active_tab == 'image' and ocr_error %}
+            <div class="error">
+                <strong>Error:</strong> {{ ocr_error }}
+            </div>
+            {% endif %}
+        </div>
+        
+    </div>
+
+    <script>
+        function showTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            window.history.pushState({}, '', '/' + tab);
+        }
+    </script>
+</body>
+</html>
